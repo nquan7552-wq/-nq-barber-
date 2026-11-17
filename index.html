@@ -5,64 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NQ BARBER - Quản Lý Tiệm Tóc</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Roboto:wght@300;400;500;600&display=swap');
-        :root {
-            --gold: #D4AF37;
-            --gold-dark: #B8860B;
-            --red: #DC143C;
-            --dark-bg: #0A0A0A;
-            --card-bg: #151515;
-            --input-bg: #1E1E1E;
-        }
-        body {
-            font-family: 'Roboto', sans-serif;
-            background: var(--dark-bg);
-            color: #fff;
-            min-height: 100vh;
-        }
-        .font-oswald { font-family: 'Oswald', sans-serif; }
-        .text-gold { color: var(--gold); }
-        .bg-gold { background: var(--gold); }
-        .bg-card { background: var(--card-bg); }
-        .bg-input { background: var(--input-bg); }
-        .sidebar-item { transition: 0.2s; border-left: 3px solid transparent; }
-        .sidebar-item:hover, .sidebar-item.active {
-            background: rgba(212, 175, 55, 0.1);
-            border-left-color: var(--gold);
-            color: var(--gold);
-        }
-        .service-card { transition: 0.2s; cursor: pointer; }
-        .service-card:hover { transform: translateY(-4px); }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            color: #000;
-            font-weight: 600;
-        }
-        .btn-danger {
-            background: linear-gradient(135deg, #DC143C, #B22222);
-            color: #fff;
-        }
-        .btn-outline {
-            border: 2px solid var(--gold);
-            color: var(--gold);
-            background: transparent;
-        }
-        .btn-outline:hover { background: var(--gold); color: #000; }
-        .page, .login-page { display: none; }
-        .page.active, .login-page.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.7);
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal.active { display: flex; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -78,10 +21,10 @@
             </div>
             <div>
                 <label class="text-sm text-gray-400 block mb-2">Mật khẩu</label>
-                <input type="password" id="password" class="w-full bg-input border border-gray-700 rounded-lg px-4 py-2.5 focus:outline-none focus:border-gold" placeholder="123456" onkeypress="if(event.key==='Enter')login()">
+                <input type="password" id="password" class="w-full bg-input border border-gray-700 rounded-lg px-4 py-2.5 focus:outline-none focus:border-gold" placeholder="123456">
             </div>
             <button onclick="login()" class="btn-primary w-full py-2.5 rounded-lg mt-2">🔐 ĐĂNG NHẬP</button>
-            <p class="text-xs text-gray-500 text-center mt-4">Tài khoản: admin / Mật khẩu: 123456</p>
+            <p class="text-xs text-gray-500 text-center mt-4">Tài khoản: admin / 123456</p>
         </div>
     </div>
 </div>
@@ -115,7 +58,7 @@
 
         <!-- Nội dung chính -->
         <main class="ml-64 flex-1 p-6">
-            <!-- ===== THU NGÂN ===== -->
+            <!-- Thu Ngân -->
             <div id="dashboard" class="page active">
                 <div class="flex justify-between items-center mb-8">
                     <div class="relative flex-1 max-w-md">
@@ -124,13 +67,11 @@
                     </div>
                     <button class="btn-primary px-5 py-2.5 rounded-lg ml-4" onclick="openCustomerModal()">+ Thêm Khách</button>
                 </div>
-
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="bg-card rounded-xl p-6 border border-gray-800">
                         <h3 class="text-xl font-bold mb-4">DANH SÁCH DỊCH VỤ</h3>
                         <div class="grid grid-cols-3 gap-4" id="servicesGrid"></div>
                     </div>
-
                     <div class="bg-card rounded-xl p-6 border border-gray-800">
                         <h3 class="text-xl font-bold mb-4">THANH TOÁN</h3>
                         <div class="mb-4 p-3 bg-input rounded-lg">
@@ -160,29 +101,23 @@
                 </div>
             </div>
 
-            <!-- ===== HÓA ĐƠN ===== -->
+            <!-- Hóa Đơn -->
             <div id="invoices" class="page">
                 <div class="bg-card rounded-xl p-6 border border-gray-800">
                     <h2 class="text-xl font-bold mb-4">🧾 DANH SÁCH HÓA ĐƠN</h2>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm">
-                            <thead>
-                                <tr class="text-gray-400 border-b border-gray-700">
-                                    <th class="text-left py-2">Mã HD</th>
-                                    <th class="text-left py-2">Khách hàng</th>
-                                    <th class="text-left py-2">Dịch vụ</th>
-                                    <th class="text-right py-2">Tổng tiền</th>
-                                    <th class="text-center py-2">Ngày</th>
-                                    <th class="text-center py-2">Thao tác</th>
-                                </tr>
-                            </thead>
+                            <thead><tr class="text-gray-400 border-b border-gray-700">
+                                <th class="text-left py-2">Mã HD</th><th class="text-left py-2">Khách hàng</th><th class="text-left py-2">Dịch vụ</th>
+                                <th class="text-right py-2">Tổng tiền</th><th class="text-center py-2">Ngày</th><th class="text-center py-2">Thao tác</th>
+                            </tr></thead>
                             <tbody id="invoiceList"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- ===== KHÁCH HÀNG ===== -->
+            <!-- Khách Hàng -->
             <div id="customers" class="page">
                 <div class="bg-card rounded-xl p-6 border border-gray-800">
                     <div class="flex justify-between items-center mb-4">
@@ -191,22 +126,17 @@
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm">
-                            <thead>
-                                <tr class="text-gray-400 border-b border-gray-700">
-                                    <th class="text-left py-2">Tên</th>
-                                    <th class="text-left py-2">SĐT</th>
-                                    <th class="text-left py-2">Ghi chú</th>
-                                    <th class="text-center py-2">Ngày tạo</th>
-                                    <th class="text-center py-2">Thao tác</th>
-                                </tr>
-                            </thead>
+                            <thead><tr class="text-gray-400 border-b border-gray-700">
+                                <th class="text-left py-2">Tên</th><th class="text-left py-2">SĐT</th><th class="text-left py-2">Ghi chú</th>
+                                <th class="text-center py-2">Ngày tạo</th><th class="text-center py-2">Thao tác</th>
+                            </tr></thead>
                             <tbody id="customerList"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- ===== DỊCH VỤ ===== -->
+            <!-- Dịch Vụ -->
             <div id="services" class="page">
                 <div class="bg-card rounded-xl p-6 border border-gray-800">
                     <div class="flex justify-between items-center mb-4">
@@ -215,21 +145,17 @@
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm">
-                            <thead>
-                                <tr class="text-gray-400 border-b border-gray-700">
-                                    <th class="text-left py-2">Hình</th>
-                                    <th class="text-left py-2">Tên dịch vụ</th>
-                                    <th class="text-right py-2">Giá</th>
-                                    <th class="text-center py-2">Thao tác</th>
-                                </tr>
-                            </thead>
+                            <thead><tr class="text-gray-400 border-b border-gray-700">
+                                <th class="text-left py-2">Hình</th><th class="text-left py-2">Tên dịch vụ</th>
+                                <th class="text-right py-2">Giá</th><th class="text-center py-2">Thao tác</th>
+                            </tr></thead>
                             <tbody id="serviceAdminList"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- ===== BÁO CÁO ===== -->
+            <!-- Báo Cáo -->
             <div id="reports" class="page">
                 <div class="bg-card rounded-xl p-6 border border-gray-800">
                     <h2 class="text-xl font-bold mb-6">📋 BÁO CÁO TỔNG HỢP</h2>
@@ -257,9 +183,50 @@
     </div>
 </div>
 
-<!-- MODAL: Thêm/Sửa Khách Hàng -->
+<!-- MODAL: Khách Hàng -->
 <div id="customerModal" class="modal">
     <div class="bg-card p-6 rounded-xl border border-gray-800 w-full max-w-md">
         <h3 class="text-xl font-bold mb-4" id="customerModalTitle">Thêm Khách Hàng</h3>
         <div class="space-y-3">
-            <div
+            <div><label class="text-sm text-gray-400 block mb-1">Tên khách hàng</label>
+                <input type="text" id="custName" class="w-full bg-input border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:border-gold">
+            </div>
+            <div><label class="text-sm text-gray-400 block mb-1">Số điện thoại</label>
+                <input type="tel" id="custPhone" class="w-full bg-input border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:border-gold">
+            </div>
+            <div><label class="text-sm text-gray-400 block mb-1">Ghi chú</label>
+                <textarea id="custNote" class="w-full bg-input border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:border-gold" rows="2"></textarea>
+            </div>
+        </div>
+        <div class="flex gap-3 mt-4">
+            <button onclick="closeCustomerModal()" class="btn-outline flex-1 py-2 rounded-lg">Đóng</button>
+            <button onclick="saveCustomer()" class="btn-primary flex-1 py-2 rounded-lg">Lưu</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Dịch Vụ -->
+<div id="serviceModal" class="modal">
+    <div class="bg-card p-6 rounded-xl border border-gray-800 w-full max-w-md">
+        <h3 class="text-xl font-bold mb-4" id="serviceModalTitle">Thêm Dịch Vụ</h3>
+        <div class="space-y-3">
+            <div><label class="text-sm text-gray-400 block mb-1">Biểu tượng (vd: 💇)</label>
+                <input type="text" id="servImg" class="w-full bg-input border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:border-gold">
+            </div>
+            <div><label class="text-sm text-gray-400 block mb-1">Tên dịch vụ</label>
+                <input type="text" id="servName" class="w-full bg-input border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:border-gold">
+            </div>
+            <div><label class="text-sm text-gray-400 block mb-1">Giá (VNĐ)</label>
+                <input type="number" id="servPrice" class="w-full bg-input border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:border-gold">
+            </div>
+        </div>
+        <div class="flex gap-3 mt-4">
+            <button onclick="closeServiceModal()" class="btn-outline flex-1 py-2 rounded-lg">Đóng</button>
+            <button onclick="saveService()" class="btn-primary flex-1 py-2 rounded-lg">Lưu</button>
+        </div>
+    </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
