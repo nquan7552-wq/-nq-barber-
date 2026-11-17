@@ -1,245 +1,265 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>NQ BARBER - Quản Lý Tiệm Tóc</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Roboto:wght@300;400;500;600&display=swap');
-:root{--gold:#D4AF37;--gold-dark:#B8860B;--red:#DC143C;--dark-bg:#0A0A0A;--card-bg:#151515;--input-bg:#1E1E1E;--border-color:#2A2A2A;}
-body{font-family:'Roboto',sans-serif;background:var(--dark-bg);color:#fff;min-height:100vh;}
-.font-oswald{font-family:'Oswald',sans-serif;}
-.text-gold{color:var(--gold);}
-.bg-gold{background:var(--gold);}
-.bg-card{background:var(--card-bg);}
-.bg-input{background:var(--input-bg);}
-.sidebar-item{transition:.2s;border-left:3px solid transparent;}
-.sidebar-item:hover,.sidebar-item.active{background:rgba(212,175,55,.1);border-left-color:var(--gold);color:var(--gold);}
-.service-card{transition:.2s;cursor:pointer;}
-.service-card:hover{transform:translateY(-4px);}
-.btn-primary{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:#000;font-weight:600;}
-.btn-primary:hover{box-shadow:0 0 20px rgba(212,175,55,.4);}
-.btn-danger{background:linear-gradient(135deg,#DC143C,#B22222);color:#fff;}
-.btn-outline{border:2px solid var(--gold);color:var(--gold);background:transparent;}
-.btn-outline:hover{background:var(--gold);color:#000;}
-.page{display:none;}
-.page.active{display:block;animation:fadeIn .3s ease;}
-@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NQ BARBER - Quản Lý Tiệm Tóc</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Roboto:wght@300;400;500;600&display=swap');
+        :root {
+            --gold: #D4AF37;
+            --gold-dark: #B8860B;
+            --red: #DC143C;
+            --dark-bg: #0A0A0A;
+            --card-bg: #151515;
+            --input-bg: #1E1E1E;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--dark-bg);
+            color: #fff;
+            min-height: 100vh;
+        }
+        .font-oswald { font-family: 'Oswald', sans-serif; }
+        .text-gold { color: var(--gold); }
+        .bg-gold { background: var(--gold); }
+        .bg-card { background: var(--card-bg); }
+        .bg-input { background: var(--input-bg); }
+        .sidebar-item { transition: 0.2s; border-left: 3px solid transparent; }
+        .sidebar-item:hover, .sidebar-item.active {
+            background: rgba(212, 175, 55, 0.1);
+            border-left-color: var(--gold);
+            color: var(--gold);
+        }
+        .service-card { transition: 0.2s; cursor: pointer; }
+        .service-card:hover { transform: translateY(-4px); }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: #000;
+            font-weight: 600;
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #DC143C, #B22222);
+            color: #fff;
+        }
+        .btn-outline {
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            background: transparent;
+        }
+        .btn-outline:hover { background: var(--gold); color: #000; }
+        .page, .login-page { display: none; }
+        .page.active, .login-page.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active { display: flex; }
+    </style>
 </head>
 <body>
-<div class="flex min-h-screen">
-<aside class="w-64 bg-card border-r border-gray-800 flex flex-col fixed h-screen z-10">
-<div class="p-6 border-b border-gray-800">
-<h1 class="font-oswald text-4xl font-bold text-gold">NQ</h1>
-<p class="text-sm text-gray-400">BARBER — Đẳng cấp đàn ông</p>
-</div>
-<nav class="flex-1 py-6 px-3">
-<button class="sidebar-item active w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2" onclick="showPage('dashboard')">📊 Thu Ngân</button>
-<button class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2" onclick="showPage('appointments')">📅 Lịch Hẹn</button>
-<button class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2" onclick="showPage('customers')">👤 Khách Hàng</button>
-<button class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2" onclick="showPage('services')">✂️ Dịch Vụ</button>
-<button class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2" onclick="showPage('products')">🛍️ Sản Phẩm</button>
-<button class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2" onclick="showPage('revenue')">💰 Doanh Thu</button>
-<button class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2" onclick="showPage('reports')">📋 Báo Cáo</button>
-</nav>
-<div class="p-4 border-t border-gray-800">
-<div class="flex items-center gap-3 mb-4">
-<div class="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center text-gold font-bold">NQ</div>
-<div><p class="font-semibold text-sm">NQ BARBER</p><p class="text-xs text-gray-400">Quản trị viên</p></div>
-</div>
-<button class="w-full py-2 rounded-lg border border-red-600 text-red-500 text-sm hover:bg-red-600/10">ĐĂNG XUẤT</button>
-</div>
-</aside>
 
-<main class="ml-64 flex-1 p-6">
-<div id="dashboard" class="page active">
-<div class="flex justify-between items-center mb-8">
-<div class="relative flex-1 max-w-md">
-<input type="text" placeholder="Tìm dịch vụ, sản phẩm..." class="w-full bg-input border border-gray-700 rounded-lg px-4 py-2.5 pl-10 text-sm focus:outline-none focus:border-gold">
-<span class="absolute left-3 top-2.5 text-gray-400">🔍</span>
-</div>
-<button class="btn-primary px-5 py-2.5 rounded-lg ml-4">+ Thêm Khách Hàng</button>
+<!-- ===== MÀN HÌNH ĐĂNG NHẬP ===== -->
+<div id="loginPage" class="login-page active min-h-screen flex items-center justify-center">
+    <div class="bg-card p-8 rounded-2xl border border-gray-800 w-full max-w-md">
+        <h1 class="font-oswald text-4xl font-bold text-center mb-2"><span class="text-gold">NQ</span> BARBER</h1>
+        <p class="text-gray-400 text-center mb-8">Đăng nhập hệ thống quản lý</p>
+        <div class="space-y-4">
+            <div>
+                <label class="text-sm text-gray-400 block mb-2">Tên đăng nhập</label>
+                <input type="text" id="username" class="w-full bg-input border border-gray-700 rounded-lg px-4 py-2.5 focus:outline-none focus:border-gold" placeholder="admin">
+            </div>
+            <div>
+                <label class="text-sm text-gray-400 block mb-2">Mật khẩu</label>
+                <input type="password" id="password" class="w-full bg-input border border-gray-700 rounded-lg px-4 py-2.5 focus:outline-none focus:border-gold" placeholder="123456" onkeypress="if(event.key==='Enter')login()">
+            </div>
+            <button onclick="login()" class="btn-primary w-full py-2.5 rounded-lg mt-2">🔐 ĐĂNG NHẬP</button>
+            <p class="text-xs text-gray-500 text-center mt-4">Tài khoản: admin / Mật khẩu: 123456</p>
+        </div>
+    </div>
 </div>
 
-<div class="relative rounded-2xl overflow-hidden mb-8 bg-gradient-to-r from-black to-gray-900 p-8">
-<div class="max-w-lg">
-<p class="text-gold text-sm font-semibold mb-2">CHÀO MỪNG TRỞ LẠI</p>
-<h2 class="font-oswald text-6xl font-bold">NQ<br><span class="text-gold">BARBER</span></h2>
-<p class="text-red-400 text-lg italic mt-2 mb-4">Đẳng Cấp Đàn Ông!</p>
-<p class="text-gray-400 text-sm mb-6">Chúng tôi tạo nên phong cách đẳng cấp cho bạn.</p>
-<div class="flex gap-6 text-sm">
-<div class="text-center"><span class="text-yellow-400 text-xl">⭐ 4.9</span><br><span class="text-gray-400 text-xs">Đánh giá</span></div>
-<div class="text-center"><span class="text-gold text-xl">✂️ 1.2K+</span><br><span class="text-gray-400 text-xs">Khách hàng</span></div>
-<div class="text-center"><span class="text-gold text-xl">🏆 5+</span><br><span class="text-gray-400 text-xs">Năm hoạt động</span></div>
-</div>
-</div>
+<!-- ===== GIAO DIỆN CHÍNH ===== -->
+<div id="mainApp" class="hidden">
+    <div class="flex min-h-screen">
+        <!-- Thanh bên -->
+        <aside class="w-64 bg-card border-r border-gray-800 flex flex-col fixed h-screen z-10">
+            <div class="p-6 border-b border-gray-800">
+                <h1 class="font-oswald text-4xl font-bold text-gold">NQ</h1>
+                <p class="text-sm text-gray-400">BARBER — Đẳng cấp đàn ông</p>
+            </div>
+            <nav class="flex-1 py-6 px-3">
+                <button class="sidebar-item active w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2" onclick="showPage('dashboard')">📊 Thu Ngân</button>
+                <button class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2" onclick="showPage('invoices')">🧾 Hóa Đơn</button>
+                <button class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2" onclick="showPage('customers')">👤 Khách Hàng</button>
+                <button class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2" onclick="showPage('services')">✂️ Dịch Vụ</button>
+                <button class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2" onclick="showPage('reports')">📋 Báo Cáo</button>
+            </nav>
+            <div class="p-4 border-t border-gray-800">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center text-gold font-bold">NQ</div>
+                        <div><p class="font-semibold text-sm" id="adminName">Admin</p><p class="text-xs text-gray-400">Quản trị viên</p></div>
+                    </div>
+                </div>
+                <button onclick="logout()" class="w-full py-2 rounded-lg border border-red-600 text-red-500 text-sm hover:bg-red-600/10">🚪 ĐĂNG XUẤT</button>
+            </div>
+        </aside>
+
+        <!-- Nội dung chính -->
+        <main class="ml-64 flex-1 p-6">
+            <!-- ===== THU NGÂN ===== -->
+            <div id="dashboard" class="page active">
+                <div class="flex justify-between items-center mb-8">
+                    <div class="relative flex-1 max-w-md">
+                        <input type="text" id="searchInput" placeholder="Tìm dịch vụ..." oninput="filterServices()" class="w-full bg-input border border-gray-700 rounded-lg px-4 py-2.5 pl-10 text-sm focus:outline-none focus:border-gold">
+                        <span class="absolute left-3 top-2.5 text-gray-400">🔍</span>
+                    </div>
+                    <button class="btn-primary px-5 py-2.5 rounded-lg ml-4" onclick="openCustomerModal()">+ Thêm Khách</button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-card rounded-xl p-6 border border-gray-800">
+                        <h3 class="text-xl font-bold mb-4">DANH SÁCH DỊCH VỤ</h3>
+                        <div class="grid grid-cols-3 gap-4" id="servicesGrid"></div>
+                    </div>
+
+                    <div class="bg-card rounded-xl p-6 border border-gray-800">
+                        <h3 class="text-xl font-bold mb-4">THANH TOÁN</h3>
+                        <div class="mb-4 p-3 bg-input rounded-lg">
+                            <label class="text-sm text-gray-400">Khách hàng:</label>
+                            <select id="selectedCustomer" class="w-full bg-card border border-gray-700 rounded px-3 py-2 mt-1 text-sm">
+                                <option value="">-- Chọn khách hàng --</option>
+                            </select>
+                        </div>
+                        <div class="space-y-3 mb-4 max-h-64 overflow-y-auto">
+                            <div class="grid grid-cols-4 gap-2 text-sm text-gray-400 border-b border-gray-700 pb-2">
+                                <span>Dịch vụ</span><span class="text-center">Đơn giá</span><span class="text-center">SL</span><span class="text-right">Thành tiền</span>
+                            </div>
+                            <div id="cartItems" class="space-y-2"><p class="text-gray-500 text-sm italic">Chọn dịch vụ...</p></div>
+                        </div>
+                        <textarea id="noteInput" placeholder="Ghi chú..." class="w-full bg-input border border-gray-700 rounded-lg p-3 text-sm mb-4 h-16 focus:outline-none focus:border-gold"></textarea>
+                        <div class="space-y-2 mb-6">
+                            <div class="flex justify-between text-sm"><span class="text-gray-400">Tổng tiền</span><span id="subtotal">0 ₫</span></div>
+                            <div class="flex justify-between text-xl font-bold border-t border-gray-700 pt-3">
+                                <span>TỔNG CỘNG</span><span class="text-gold" id="totalAmount">0 ₫</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <button class="btn-outline flex-1 py-2.5 rounded-lg" onclick="clearCart()">🗑️ Xóa</button>
+                            <button class="btn-danger flex-1 py-2.5 rounded-lg" onclick="checkout()">💳 Thanh Toán</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== HÓA ĐƠN ===== -->
+            <div id="invoices" class="page">
+                <div class="bg-card rounded-xl p-6 border border-gray-800">
+                    <h2 class="text-xl font-bold mb-4">🧾 DANH SÁCH HÓA ĐƠN</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="text-gray-400 border-b border-gray-700">
+                                    <th class="text-left py-2">Mã HD</th>
+                                    <th class="text-left py-2">Khách hàng</th>
+                                    <th class="text-left py-2">Dịch vụ</th>
+                                    <th class="text-right py-2">Tổng tiền</th>
+                                    <th class="text-center py-2">Ngày</th>
+                                    <th class="text-center py-2">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoiceList"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== KHÁCH HÀNG ===== -->
+            <div id="customers" class="page">
+                <div class="bg-card rounded-xl p-6 border border-gray-800">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold">👤 DANH SÁCH KHÁCH HÀNG</h2>
+                        <button class="btn-primary px-4 py-2 rounded-lg text-sm" onclick="openCustomerModal()">+ Thêm Mới</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="text-gray-400 border-b border-gray-700">
+                                    <th class="text-left py-2">Tên</th>
+                                    <th class="text-left py-2">SĐT</th>
+                                    <th class="text-left py-2">Ghi chú</th>
+                                    <th class="text-center py-2">Ngày tạo</th>
+                                    <th class="text-center py-2">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customerList"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== DỊCH VỤ ===== -->
+            <div id="services" class="page">
+                <div class="bg-card rounded-xl p-6 border border-gray-800">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold">✂️ QUẢN LÝ DỊCH VỤ</h2>
+                        <button class="btn-primary px-4 py-2 rounded-lg text-sm" onclick="openServiceModal()">+ Thêm Mới</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="text-gray-400 border-b border-gray-700">
+                                    <th class="text-left py-2">Hình</th>
+                                    <th class="text-left py-2">Tên dịch vụ</th>
+                                    <th class="text-right py-2">Giá</th>
+                                    <th class="text-center py-2">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="serviceAdminList"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== BÁO CÁO ===== -->
+            <div id="reports" class="page">
+                <div class="bg-card rounded-xl p-6 border border-gray-800">
+                    <h2 class="text-xl font-bold mb-6">📋 BÁO CÁO TỔNG HỢP</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                        <div class="p-4 bg-yellow-500/5 rounded-lg border border-yellow-500/20">
+                            <p class="text-yellow-400 text-sm">💰 Tổng Doanh Thu</p>
+                            <p class="text-xl font-bold" id="totalRevenue">0₫</p>
+                        </div>
+                        <div class="p-4 bg-red-500/5 rounded-lg border border-red-500/20">
+                            <p class="text-red-400 text-sm">👥 Tổng Khách Hàng</p>
+                            <p class="text-xl font-bold" id="totalCustomers">0</p>
+                        </div>
+                        <div class="p-4 bg-blue-500/5 rounded-lg border border-blue-500/20">
+                            <p class="text-blue-400 text-sm">📄 Tổng Hóa Đơn</p>
+                            <p class="text-xl font-bold" id="totalInvoices">0</p>
+                        </div>
+                        <div class="p-4 bg-green-500/5 rounded-lg border border-green-500/20">
+                            <p class="text-green-400 text-sm">⭐ Dịch Vụ Bán Chạy</p>
+                            <p class="text-sm font-bold" id="topService">-</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-<div class="bg-card rounded-xl p-6 border border-gray-800">
-<h3 class="text-xl font-bold mb-4">DỊCH VỤ</h3>
-<div class="grid grid-cols-3 gap-4" id="servicesGrid"></div>
-</div>
-
-<div class="bg-card rounded-xl p-6 border border-gray-800">
-<h3 class="text-xl font-bold mb-4">THANH TOÁN</h3>
-<div class="space-y-3 mb-4">
-<div class="grid grid-cols-4 gap-2 text-sm text-gray-400 border-b border-gray-700 pb-2">
-<span>Dịch vụ</span><span class="text-center">Đơn giá</span><span class="text-center">SL</span><span class="text-right">Thành tiền</span>
-</div>
-<div id="cartItems" class="space-y-2"><p class="text-gray-500 text-sm italic">Chọn dịch vụ...</p></div>
-</div>
-<textarea placeholder="Ghi chú..." class="w-full bg-input border border-gray-700 rounded-lg p-3 text-sm mb-4 h-16 focus:outline-none focus:border-gold"></textarea>
-<div class="space-y-2 mb-6">
-<div class="flex justify-between text-sm"><span class="text-gray-400">Tổng tiền</span><span id="subtotal">0 ₫</span></div>
-<div class="flex justify-between text-xl font-bold border-t border-gray-700 pt-3">
-<span>TỔNG CỘNG</span><span class="text-gold" id="totalAmount">0 ₫</span>
-</div>
-</div>
-<div class="flex gap-3 mb-6">
-<button class="btn-outline flex-1 py-2.5 rounded-lg" onclick="clearCart()">🗑️ Xóa</button>
-<button class="btn-danger flex-1 py-2.5 rounded-lg" onclick="checkout()">💳 Thanh Toán</button>
-</div>
-<div class="text-center">
-<p class="text-sm text-gray-400 mb-2">QUÉT QR THANH TOÁN</p>
-<div class="inline-block bg-white p-4 rounded-lg">
-<div class="w-32 h-32 flex items-center justify-center text-black font-bold">NQ<br>BARBER</div>
-</div>
-</div>
-</div>
-</div>
-
-<div class="bg-card rounded-xl p-6 border border-gray-800">
-<div class="flex justify-between items-center mb-6">
-<h3 class="text-xl font-bold">TỔNG QUAN DOANH THU</h3>
-<select class="bg-input border border-gray-700 rounded px-3 py-1.5 text-sm">
-<option selected>Hôm nay</option><option>Tháng này</option>
-</select>
-</div>
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-<div class="p-4 bg-yellow-500/5 rounded-lg border border-yellow-500/20">
-<p class="text-yellow-400 text-sm">💰 Doanh thu</p>
-<p class="text-xl font-bold">12.450.000₫</p>
-<p class="text-xs text-green-400">↑ 15.8%</p>
-</div>
-<div class="p-4 bg-red-500/5 rounded-lg border border-red-500/20">
-<p class="text-red-400 text-sm">👥 Khách hàng</p>
-<p class="text-xl font-bold">48</p>
-<p class="text-xs text-green-400">↑ 10.3%</p>
-</div>
-<div class="p-4 bg-blue-500/5 rounded-lg border border-blue-500/20">
-<p class="text-blue-400 text-sm">📄 Hóa đơn</p>
-<p class="text-xl font-bold">36</p>
-<p class="text-xs text-green-400">↑ 12.5%</p>
-</div>
-<div class="p-4 bg-green-500/5 rounded-lg border border-green-500/20">
-<p class="text-green-400 text-sm">📈 Lợi nhuận</p>
-<p class="text-xl font-bold">8.750.000₫</p>
-<p class="text-xs text-green-400">↑ 18.2%</p>
-</div>
-</div>
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-<div class="bg-input p-4 rounded-lg">
-<h4 class="text-sm font-semibold mb-3">Biểu đồ Doanh Thu</h4>
-<canvas id="revenueChart" height="150"></canvas>
-</div>
-<div class="bg-input p-4 rounded-lg">
-<h4 class="text-sm font-semibold mb-3">Doanh Thu Theo Dịch Vụ</h4>
-<canvas id="serviceChart" height="150"></canvas>
-</div>
-</div>
-</div>
-</div>
-
-<div id="appointments" class="page"><div class="bg-card rounded-xl p-6 border border-gray-800"><h2 class="text-xl font-bold mb-4">📅 Lịch Hẹn</h2><p class="text-gray-400">Danh sách lịch hẹn sẽ hiển thị ở đây</p></div></div>
-<div id="customers" class="page"><div class="bg-card rounded-xl p-6 border border-gray-800"><h2 class="text-xl font-bold mb-4">👤 Khách Hàng</h2><p class="text-gray-400">Danh sách khách hàng sẽ hiển thị ở đây</p></div></div>
-<div id="services" class="page"><div class="bg-card rounded-xl p-6 border border-gray-800"><h2 class="text-xl font-bold mb-4">✂️ Quản Lý Dịch Vụ</h2><p class="text-gray-400">Trang quản lý dịch vụ</p></div></div>
-<div id="products" class="page"><div class="bg-card rounded-xl p-6 border border-gray-800"><h2 class="text-xl font-bold mb-4">🛍️ Sản Phẩm</h2><p class="text-gray-400">Trang quản lý sản phẩm</p></div></div>
-<div id="revenue" class="page"><div class="bg-card rounded-xl p-6 border border-gray-800"><h2 class="text-xl font-bold mb-4">💰 Doanh Thu Chi Tiết</h2><p class="text-gray-400">Báo cáo doanh thu chi tiết</p></div></div>
-<div id="reports" class="page"><div class="bg-card rounded-xl p-6 border border-gray-800"><h2 class="text-xl font-bold mb-4">📋 Báo Cáo</h2><p class="text-gray-400">Báo cáo tổng hợp</p></div></div>
-</main>
-</div>
-
-<script>
-const services = [
-{id:1,name:'Cắt tóc nam',price:50000,img:'💇'},{id:2,name:'Cắt tóc cao cấp',price:80000,img:'✂️'},
-{id:3,name:'Cắt tóc + Râu',price:70000,img:'🧔'},{id:4,name:'Gội đầu',price:30000,img:'🚿'},
-{id:5,name:'Gội đầu gội chăm sóc',price:120000,img:'🧴'},{id:6,name:'Nhuộm tóc',price:300000,img:'🎨'},
-{id:7,name:'Uốn tóc',price:350000,img:'🌀'},{id:8,name:'Dưỡng tóc',price:400000,img:'✨'},
-{id:9,name:'Combo VIP',price:500000,img:'👑'}
-];
-let cart=[];
-
-function showPage(pageId){
-document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-document.getElementById(pageId).classList.add('active');
-document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('active'));
-event.target.classList.add('active');
-}
-
-function formatMoney(amount){
-return new Intl.NumberFormat('vi-VN').format(amount)+' ₫';
-}
-
-function renderServices(){
-const grid=document.getElementById('servicesGrid');
-grid.innerHTML=services.map(s=>`
-<div class="service-card bg-input rounded-lg p-4 text-center border border-gray-700 hover:border-gold" onclick="addToCart(${s.id})">
-<div class="text-3xl mb-2">${s.img}</div>
-<h4 class="text-sm font-medium mb-1">${s.name}</h4>
-<p class="text-gold text-sm font-bold">${formatMoney(s.price)}</p>
-<button class="mt-2 text-xs bg-gold/20 text-gold px-2 py-1 rounded">+ Thêm</button>
-</div>
-`).join('');
-}
-
-function addToCart(id){
-const s=services.find(x=>x.id===id);
-const exist=cart.find(x=>x.id===id);
-if(exist)exist.qty++;
-else cart.push({...s,qty:1});
-updateCart();
-}
-
-function updateCart(){
-const list=document.getElementById('cartItems');
-if(cart.length===0){
-list.innerHTML='<p class="text-gray-500 text-sm italic">Chọn dịch vụ...</p>';
-document.getElementById('subtotal').textContent='0 ₫';
-document.getElementById('totalAmount').textContent='0 ₫';
-return;
-}
-list.innerHTML=cart.map(i=>`
-<div class="grid grid-cols-4 gap-2 items-center text-sm">
-<span>${i.name}</span><span class="text-center">${formatMoney(i.price)}</span>
-<span class="text-center">${i.qty}</span><span class="text-right text-gold">${formatMoney(i.price*i.qty)}</span>
-</div>
-`).join('');
-const total=cart.reduce((sum,i)=>sum+i.price*i.qty,0);
-document.getElementById('subtotal').textContent=formatMoney(total);
-document.getElementById('totalAmount').textContent=formatMoney(total);
-}
-
-function clearCart(){cart=[];updateCart();}
-function checkout(){
-if(cart.length===0){alert('Chưa chọn dịch vụ!');return;}
-const total=cart.reduce((s,i)=>s+i.price*i.qty,0);
-alert(`✅ Thanh toán thành công!\nTổng tiền: ${formatMoney(total)}`);
-clearCart();
-}
-
-function initCharts(){
-const rCtx=document.getElementById('revenueChart').getContext('2d');
-new Chart(rCtx,{type:'line',data:{labels:['00h','06h','12h','18h','24h'],datasets:[{label:'Doanh thu',data:[2000000,3500000,12450000,9800000,12450000],borderColor:'#D4AF37',backgroundColor:'rgba(212,175,55,0.1)',fill:true,tension:0.4}]},options:{plugins:{legend:{display:false}},responsive:true}});
-const sCtx=document.getElementById('serviceChart').getContext('2d');
-new Chart(sCtx,{type:'doughnut',data:{labels:['Cắt tóc','Gội đầu','Nhuộm','Uốn','Khác'],datasets:[{data:[35,25,20,15,5],backgroundColor:['#D4AF37','#DC143C','#3B82F6','#10B981','#6B7280']}]},options:{responsive:true}});
-}
-
-renderServices();
-initCharts();
-</script>
-</body>
-</html>
+<!-- MODAL: Thêm/Sửa Khách Hàng -->
+<div id="customerModal" class="modal">
+    <div class="bg-card p-6 rounded-xl border border-gray-800 w-full max-w-md">
+        <h3 class="text-xl font-bold mb-4" id="customerModalTitle">Thêm Khách Hàng</h3>
+        <div class="space-y-3">
+            <div
