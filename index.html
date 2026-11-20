@@ -1,234 +1,930 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NQ BARBER - Quản Lý Tiệm Tóc</title>
+    <title>NQ BARBER - Hệ Thống Quản Lý Thu Chi &amp; Dịch Vụ</title>
+
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Oswald & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=Oswald:wght@500;600;700&amp;display=swap" rel="stylesheet">
+    <!-- QRCode.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" crossorigin="anonymous"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        barber: {
+                            black: '#0A0A0A',
+                            dark: '#141414',
+                            card: '#1C1C1E',
+                            gold: '#FFD700',
+                            goldHover: '#E6C200',
+                            red: '#E50914',
+                            redHover: '#B80710',
+                            white: '#FFFFFF'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Oswald', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="min-h-screen flex flex-col bg-barber-black text-white selection:bg-barber-gold selection:text-barber-black">
 
-<!-- ===== MÀN HÌNH ĐĂNG NHẬP ===== -->
-<div id="loginPage" class="login-page active min-h-screen flex items-center justify-center">
-    <div class="bg-card p-8 rounded-2xl border border-gray-800 w-full max-w-md">
-        <h1 class="font-oswald text-4xl font-bold text-center mb-2"><span class="text-gold">NQ</span> BARBER</h1>
-        <p class="text-gray-400 text-center mb-8">Đăng nhập hệ thống quản lý</p>
-        <div class="space-y-4">
-            <div>
-                <label class="text-sm text-gray-400 block mb-2">Tên đăng nhập</label>
-                <input type="text" id="username" class="w-full bg-input border border-gray-700 rounded-lg px-4 py-2.5 focus:outline-none focus:border-gold" placeholder="admin">
+    <!-- Top Barber Pole Stripe -->
+    <div class="h-1.5 w-full barber-stripe"></div>
+
+    <!-- Custom Toast Notification Container -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+    <!-- =========================================================
+         1. LOGIN SCREEN (MÀN HÌNH ĐĂNG NHẬP)
+         ========================================================= -->
+    <div id="login-screen" class="flex-1 flex flex-col items-center justify-center p-4 relative overflow-hidden bg-barber-black">
+        <!-- Ambient Glow Effects -->
+        <div class="absolute top-1/4 -left-20 w-72 h-72 bg-barber-red/20 rounded-full blur-[120px] pointer-events-none"></div>
+        <div class="absolute bottom-1/4 -right-20 w-80 h-80 bg-barber-gold/20 rounded-full blur-[120px] pointer-events-none"></div>
+
+        <div class="glass-card w-full max-w-md rounded-2xl p-6 sm:p-8 relative z-10 border-t-2 border-barber-gold my-auto">
+            <div class="text-center mb-7">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-barber-black border-2 border-barber-gold shadow-[0_0_25px_rgba(255,215,0,0.35)] mb-4">
+                    <i class="fa-solid fa-scissors text-3xl text-barber-gold transform -rotate-45"></i>
+                </div>
+                <h1 class="font-display text-3xl sm:text-4xl font-bold tracking-wider text-white">
+                    NQ <span class="text-barber-gold">BARBER</span>
+                </h1>
+                <p class="text-gray-400 text-sm mt-1">Hệ Thống Quản Lý Thu Chi &amp; Dịch Vụ Chuyên Nghiệp</p>
             </div>
-            <div>
-                <label class="text-sm text-gray-400 block mb-2">Mật khẩu</label>
-                <input type="password" id="password" class="w-full bg-input border border-gray-700 rounded-lg px-4 py-2.5 focus:outline-none focus:border-gold" placeholder="123456">
+
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-barber-gold mb-1.5">Tài khoản đăng nhập</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
+                            <i class="fa-solid fa-user"></i>
+                        </span>
+                        <input type="text" id="login-username" required placeholder="Nhập tên đăng nhập..." class="w-full pl-10 pr-4 py-3 bg-barber-dark border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-barber-gold transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-barber-gold mb-1.5">Mật khẩu</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
+                            <i class="fa-solid fa-lock"></i>
+                        </span>
+                        <input type="password" id="login-password" required placeholder="Nhập mật khẩu..." class="w-full pl-10 pr-4 py-3 bg-barber-dark border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-barber-gold transition">
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" class="btn-rgb-float w-full">
+                        <div class="btn-rgb-inner bg-gradient-to-r from-barber-red to-red-800 py-3.5 px-6 font-bold text-white uppercase tracking-wider text-sm">
+                            <i class="fa-solid fa-right-to-bracket"></i> Đăng Nhập Hệ Thống
+                        </div>
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-6 pt-4 border-t border-gray-800/80 text-center">
+                <p class="text-[11px] text-gray-500">
+                    <i class="fa-solid fa-shield-halved text-barber-gold mr-1"></i>
+                    Vui lòng nhập tài khoản được cấp bởi Quản Trị Viên NQ Barber
+                </p>
             </div>
-            <button onclick="login()" class="btn-primary w-full py-2.5 rounded-lg mt-2">🔐 ĐĂNG NHẬP</button>
-            <p class="text-xs text-gray-500 text-center mt-4">Tài khoản: admin / 123456</p>
         </div>
     </div>
-</div>
 
-<!-- ===== GIAO DIỆN CHÍNH ===== -->
-<div id="mainApp" class="hidden">
-    <div class="flex min-h-screen">
-        <!-- Thanh bên -->
-        <aside class="w-64 bg-card border-r border-gray-800 flex flex-col fixed h-screen z-10">
-            <div class="p-6 border-b border-gray-800">
-                <h1 class="font-oswald text-4xl font-bold text-gold">NQ</h1>
-                <p class="text-sm text-gray-400">BARBER — Đẳng cấp đàn ông</p>
-            </div>
-            <nav class="flex-1 py-6 px-3">
-                <button class="sidebar-item active w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2" onclick="showPage('dashboard')">📊 Thu Ngân</button>
-                <button class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2" onclick="showPage('invoices')">🧾 Hóa Đơn</button>
-                <button class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2" onclick="showPage('customers')">👤 Khách Hàng</button>
-                <button class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2" onclick="showPage('services')">✂️ Dịch Vụ</button>
-                <button class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2" onclick="showPage('reports')">📋 Báo Cáo</button>
-            </nav>
-            <div class="p-4 border-t border-gray-800">
-                <div class="flex items-center justify-between mb-4">
+    <!-- =========================================================
+         2. MAIN APPLICATION WORKSPACE
+         ========================================================= -->
+    <div id="main-app" class="hidden flex-1 flex flex-col bg-barber-black">
+
+        <!-- Sticky Navigation Header -->
+        <header class="sticky top-0 z-40 bg-barber-black/95 backdrop-blur-md border-b border-barber-gold/25 shadow-lg">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-wrap items-center justify-between min-h-[68px] py-2 gap-2">
+                    <!-- Brand -->
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center text-gold font-bold">NQ</div>
-                        <div><p class="font-semibold text-sm" id="adminName">Admin</p><p class="text-xs text-gray-400">Quản trị viên</p></div>
-                    </div>
-                </div>
-                <button onclick="logout()" class="w-full py-2 rounded-lg border border-red-600 text-red-500 text-sm hover:bg-red-600/10">🚪 ĐĂNG XUẤT</button>
-            </div>
-        </aside>
-
-        <!-- Nội dung chính -->
-        <main class="ml-64 flex-1 p-6">
-            <!-- Thu Ngân -->
-            <div id="dashboard" class="page active">
-                <div class="flex justify-between items-center mb-8">
-                    <div class="relative flex-1 max-w-md">
-                        <input type="text" id="searchInput" placeholder="Tìm dịch vụ..." oninput="filterServices()" class="w-full bg-input border border-gray-700 rounded-lg px-4 py-2.5 pl-10 text-sm focus:outline-none focus:border-gold">
-                        <span class="absolute left-3 top-2.5 text-gray-400">🔍</span>
-                    </div>
-                    <button class="btn-primary px-5 py-2.5 rounded-lg ml-4" onclick="openCustomerModal()">+ Thêm Khách</button>
-                </div>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="bg-card rounded-xl p-6 border border-gray-800">
-                        <h3 class="text-xl font-bold mb-4">DANH SÁCH DỊCH VỤ</h3>
-                        <div class="grid grid-cols-3 gap-4" id="servicesGrid"></div>
-                    </div>
-                    <div class="bg-card rounded-xl p-6 border border-gray-800">
-                        <h3 class="text-xl font-bold mb-4">THANH TOÁN</h3>
-                        <div class="mb-4 p-3 bg-input rounded-lg">
-                            <label class="text-sm text-gray-400">Khách hàng:</label>
-                            <select id="selectedCustomer" class="w-full bg-card border border-gray-700 rounded px-3 py-2 mt-1 text-sm">
-                                <option value="">-- Chọn khách hàng --</option>
-                            </select>
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-barber-gold to-yellow-600 flex items-center justify-center text-barber-black shadow-lg">
+                            <i class="fa-solid fa-scissors text-xl sm:text-2xl transform -rotate-45"></i>
                         </div>
-                        <div class="space-y-3 mb-4 max-h-64 overflow-y-auto">
-                            <div class="grid grid-cols-4 gap-2 text-sm text-gray-400 border-b border-gray-700 pb-2">
-                                <span>Dịch vụ</span><span class="text-center">Đơn giá</span><span class="text-center">SL</span><span class="text-right">Thành tiền</span>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h1 id="header-shop-name" class="font-display text-xl sm:text-2xl font-bold tracking-wider text-white">NQ BARBER</h1>
+                                <span class="hidden sm:inline-block px-2 py-0.5 text-[10px] font-bold uppercase bg-barber-red text-white rounded">VIP SALON</span>
                             </div>
-                            <div id="cartItems" class="space-y-2"><p class="text-gray-500 text-sm italic">Chọn dịch vụ...</p></div>
+                            <p id="header-shop-tagline" class="text-[11px] sm:text-xs text-barber-gold truncate max-w-[180px] sm:max-w-xs">Đẳng Cấp Phái Mạnh - Chuẩn Phong Cách</p>
                         </div>
-                        <textarea id="noteInput" placeholder="Ghi chú..." class="w-full bg-input border border-gray-700 rounded-lg p-3 text-sm mb-4 h-16 focus:outline-none focus:border-gold"></textarea>
-                        <div class="space-y-2 mb-6">
-                            <div class="flex justify-between text-sm"><span class="text-gray-400">Tổng tiền</span><span id="subtotal">0 ₫</span></div>
-                            <div class="flex justify-between text-xl font-bold border-t border-gray-700 pt-3">
-                                <span>TỔNG CỘNG</span><span class="text-gold" id="totalAmount">0 ₫</span>
+                    </div>
+
+                    <!-- Actions & Role Info -->
+                    <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                        <!-- Role Badge -->
+                        <div id="user-role-badge" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-barber-dark border border-gray-700 text-xs sm:text-sm"></div>
+
+                        <!-- Admin Account & Password Management Button -->
+                        <button id="btn-admin-accounts" type="button" onclick="openAccountManagerModal()" class="hidden btn-rgb-float" title="Quản lý tài khoản &amp; đổi mật khẩu thành viên">
+                            <div class="btn-rgb-inner bg-barber-dark hover:bg-gray-800 px-3 py-2 text-xs font-bold text-white">
+                                <i class="fa-solid fa-users-gear text-barber-red"></i>
+                                <span class="hidden md:inline">Tài Khoản &amp; Mật Khẩu</span>
+                            </div>
+                        </button>
+
+                        <!-- Admin Settings Button -->
+                        <button id="btn-admin-settings" type="button" onclick="openShopSettingsModal()" class="hidden btn-rgb-float" title="Cấu hình thông tin tiệm &amp; Ngân hàng VietQR">
+                            <div class="btn-rgb-inner bg-barber-dark hover:bg-gray-800 px-3 py-2 text-xs font-bold text-barber-gold">
+                                <i class="fa-solid fa-gear"></i>
+                                <span class="hidden md:inline">Cấu Hình Tiệm &amp; VietQR</span>
+                            </div>
+                        </button>
+
+                        <!-- Logout Button -->
+                        <button type="button" onclick="logout()" class="btn-rgb-float">
+                            <div class="btn-rgb-inner bg-barber-red hover:bg-barber-redHover px-3 sm:px-4 py-2 text-xs font-bold text-white">
+                                <i class="fa-solid fa-power-off"></i>
+                                <span class="hidden sm:inline">Đăng Xuất</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+
+            <!-- SECTION 1: FINANCIAL DASHBOARD -->
+            <section>
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                    <div>
+                        <h2 class="font-display text-2xl font-bold uppercase tracking-wide text-white flex items-center gap-2">
+                            <span class="w-1.5 h-6 bg-barber-gold rounded-full inline-block"></span>
+                            Tổng Quan Tài Chính Tiệm
+                        </h2>
+                        <p class="text-xs text-gray-400">Theo dõi doanh thu cắt tóc, chi phí vận hành &amp; lợi nhuận thực tế</p>
+                    </div>
+
+                    <div id="admin-finance-controls" class="hidden flex flex-wrap gap-2">
+                        <button type="button" onclick="openDirectAdjustModal()" class="btn-rgb-float">
+                            <div class="btn-rgb-inner bg-barber-dark hover:bg-gray-900 px-4 py-2 text-xs font-bold text-barber-gold">
+                                <i class="fa-solid fa-pen-to-square"></i> Admin Chỉnh Số Tiền Trực Tiếp
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Revenue Card -->
+                    <div class="glass-card rounded-2xl p-5 relative overflow-hidden">
+                        <div class="absolute right-3 top-3 w-11 h-11 rounded-xl bg-barber-gold/15 flex items-center justify-center text-barber-gold text-xl">
+                            <i class="fa-solid fa-sack-dollar"></i>
+                        </div>
+                        <p class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Tổng Doanh Thu</p>
+                        <h3 id="stat-revenue" class="font-display text-2xl sm:text-3xl font-bold text-barber-gold mt-2">0 ₫</h3>
+                        <div class="mt-3 flex items-center justify-between text-xs">
+                            <span id="stat-bill-count" class="text-emerald-400 font-medium"><i class="fa-solid fa-receipt mr-1"></i>0 hóa đơn dịch vụ</span>
+                            <button type="button" onclick="openDirectAdjustModal()" class="admin-only hidden text-gray-400 hover:text-barber-gold underline">Sửa</button>
+                        </div>
+                    </div>
+
+                    <!-- Expense Card -->
+                    <div class="glass-card rounded-2xl p-5 relative overflow-hidden">
+                        <div class="absolute right-3 top-3 w-11 h-11 rounded-xl bg-barber-red/20 flex items-center justify-center text-barber-red text-xl">
+                            <i class="fa-solid fa-file-invoice-dollar"></i>
+                        </div>
+                        <p class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Tổng Chi Tiêu</p>
+                        <h3 id="stat-expense" class="font-display text-2xl sm:text-3xl font-bold text-barber-red mt-2">0 ₫</h3>
+                        <div class="mt-3 flex items-center justify-between text-xs">
+                            <span id="stat-expense-count" class="text-gray-400"><i class="fa-solid fa-box-open mr-1"></i>0 khoản chi</span>
+                            <button type="button" onclick="openExpenseModal()" class="text-barber-gold hover:underline font-semibold">+ Thêm khoản chi</button>
+                        </div>
+                    </div>
+
+                    <!-- Net Profit Card -->
+                    <div class="glass-card rounded-2xl p-5 relative overflow-hidden border-barber-gold/40">
+                        <div class="absolute right-3 top-3 w-11 h-11 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-xl">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <p class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Lợi Nhuận Ròng</p>
+                        <h3 id="stat-profit" class="font-display text-2xl sm:text-3xl font-bold text-white mt-2">0 ₫</h3>
+                        <div class="mt-3 flex items-center justify-between text-xs">
+                            <span id="stat-margin" class="text-emerald-400 font-medium">Tỷ suất: 100%</span>
+                            <span class="text-gray-500">Thu - Chi</span>
+                        </div>
+                    </div>
+
+                    <!-- Quick Expense Action Card -->
+                    <div class="glass-card rounded-2xl p-5 flex flex-col justify-between bg-gradient-to-br from-barber-dark to-barber-red/10">
+                        <div>
+                            <p class="text-xs uppercase tracking-wider text-barber-gold font-bold">Chi Tiêu Vận Hành</p>
+                            <p class="text-xs text-gray-300 mt-1">Ghi nhận chi phí mua sáp, lưỡi dao, điện nước hoặc nhập hàng.</p>
+                        </div>
+                        <div class="mt-4">
+                            <button type="button" onclick="openExpenseModal()" class="btn-rgb-float w-full">
+                                <div class="btn-rgb-inner bg-barber-dark hover:bg-gray-900 py-2.5 px-4 text-xs font-bold text-white">
+                                    <i class="fa-solid fa-minus-circle text-barber-red"></i> Ghi Nhận Chi Tiêu Mới
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: POS SERVICE BILLING & VIETQR -->
+            <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Services Menu -->
+                <div class="lg:col-span-7 glass-card rounded-2xl p-5 sm:p-6 flex flex-col">
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+                        <div>
+                            <h2 class="font-display text-xl sm:text-2xl font-bold uppercase tracking-wide text-white flex items-center gap-2">
+                                <i class="fa-solid fa-scissors text-barber-gold"></i>
+                                Bảng Dịch Vụ NQ Barber
+                            </h2>
+                            <p class="text-xs text-gray-400">Chọn dịch vụ &amp; điều chỉnh số lượng khách hàng sử dụng</p>
+                        </div>
+
+                        <button type="button" onclick="openServiceModal()" class="admin-only hidden btn-rgb-float">
+                            <div class="btn-rgb-inner bg-barber-gold text-barber-black hover:bg-barber-goldHover px-3.5 py-2 text-xs font-extrabold">
+                                <i class="fa-solid fa-plus"></i> Thêm Dịch Vụ
+                            </div>
+                        </button>
+                    </div>
+
+                    <div id="services-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 flex-1"></div>
+                </div>
+
+                <!-- Current Customer Bill -->
+                <div class="lg:col-span-5 glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between border-t-4 border-barber-red">
+                    <div>
+                        <div class="flex items-center justify-between pb-3 border-b border-gray-800">
+                            <h2 class="font-display text-xl sm:text-2xl font-bold uppercase text-white flex items-center gap-2">
+                                <i class="fa-solid fa-receipt text-barber-red"></i>
+                                Hóa Đơn Thanh Toán
+                            </h2>
+                            <button type="button" onclick="clearCurrentBill()" class="text-xs text-gray-400 hover:text-barber-red transition">
+                                <i class="fa-solid fa-rotate-left mr-1"></i>Làm mới
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                            <div>
+                                <label class="block text-[11px] font-semibold uppercase text-gray-400 mb-1">Tên Khách Hàng</label>
+                                <input type="text" id="bill-customer" placeholder="VD: Anh Minh / Khách lẻ" class="w-full px-3 py-2 bg-barber-dark border border-gray-700 rounded-xl text-sm text-white focus:outline-none focus:border-barber-gold">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold uppercase text-gray-400 mb-1">Thợ Cắt Thực Hiện</label>
+                                <select id="bill-barber" class="w-full px-3 py-2 bg-barber-dark border border-gray-700 rounded-xl text-sm text-white focus:outline-none focus:border-barber-gold"></select>
                             </div>
                         </div>
-                        <div class="flex gap-3">
-                            <button class="btn-outline flex-1 py-2.5 rounded-lg" onclick="clearCart()">🗑️ Xóa</button>
-                            <button class="btn-danger flex-1 py-2.5 rounded-lg" onclick="checkout()">💳 Thanh Toán</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Hóa Đơn -->
-            <div id="invoices" class="page">
-                <div class="bg-card rounded-xl p-6 border border-gray-800">
-                    <h2 class="text-xl font-bold mb-4">🧾 DANH SÁCH HÓA ĐƠN</h2>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
-                            <thead><tr class="text-gray-400 border-b border-gray-700">
-                                <th class="text-left py-2">Mã HD</th><th class="text-left py-2">Khách hàng</th><th class="text-left py-2">Dịch vụ</th>
-                                <th class="text-right py-2">Tổng tiền</th><th class="text-center py-2">Ngày</th><th class="text-center py-2">Thao tác</th>
-                            </tr></thead>
-                            <tbody id="invoiceList"></tbody>
-                        </table>
+                        <div class="mt-4">
+                            <div class="flex items-center justify-between text-xs text-gray-400 mb-2">
+                                <span>Tổng số lượt dịch vụ (<span id="selected-count" class="text-barber-gold font-bold">0</span>)</span>
+                                <span>Số lượng &amp; Thành tiền</span>
+                            </div>
+                            <div id="selected-services-list" class="min-h-[150px] max-h-[250px] overflow-y-auto space-y-2 bg-barber-dark/80 rounded-xl p-3 border border-gray-800"></div>
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Khách Hàng -->
-            <div id="customers" class="page">
-                <div class="bg-card rounded-xl p-6 border border-gray-800">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-bold">👤 DANH SÁCH KHÁCH HÀNG</h2>
-                        <button class="btn-primary px-4 py-2 rounded-lg text-sm" onclick="openCustomerModal()">+ Thêm Mới</button>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
-                            <thead><tr class="text-gray-400 border-b border-gray-700">
-                                <th class="text-left py-2">Tên</th><th class="text-left py-2">SĐT</th><th class="text-left py-2">Ghi chú</th>
-                                <th class="text-center py-2">Ngày tạo</th><th class="text-center py-2">Thao tác</th>
-                            </tr></thead>
-                            <tbody id="customerList"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+                    <div class="mt-5 pt-4 border-t border-gray-800 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-300 font-medium">Tổng Cộng Thanh Toán:</span>
+                            <span id="bill-total-amount" class="font-display text-3xl font-bold text-barber-gold">0 ₫</span>
+                        </div>
 
-            <!-- Dịch Vụ -->
-            <div id="services" class="page">
-                <div class="bg-card rounded-xl p-6 border border-gray-800">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-bold">✂️ QUẢN LÝ DỊCH VỤ</h2>
-                        <button class="btn-primary px-4 py-2 rounded-lg text-sm" onclick="openServiceModal()">+ Thêm Mới</button>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
-                            <thead><tr class="text-gray-400 border-b border-gray-700">
-                                <th class="text-left py-2">Hình</th><th class="text-left py-2">Tên dịch vụ</th>
-                                <th class="text-right py-2">Giá</th><th class="text-center py-2">Thao tác</th>
-                            </tr></thead>
-                            <tbody id="serviceAdminList"></tbody>
-                        </table>
+                        <button type="button" onclick="openQRCheckoutModal()" class="btn-rgb-float w-full">
+                            <div class="btn-rgb-inner bg-gradient-to-r from-barber-gold via-yellow-500 to-amber-500 py-3.5 px-6 font-extrabold text-barber-black uppercase tracking-wider text-sm">
+                                <i class="fa-solid fa-qrcode text-lg"></i>
+                                Thanh Toán &amp; Xuất Mã QR
+                            </div>
+                        </button>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <!-- Báo Cáo -->
-            <div id="reports" class="page">
-                <div class="bg-card rounded-xl p-6 border border-gray-800">
-                    <h2 class="text-xl font-bold mb-6">📋 BÁO CÁO TỔNG HỢP</h2>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                        <div class="p-4 bg-yellow-500/5 rounded-lg border border-yellow-500/20">
-                            <p class="text-yellow-400 text-sm">💰 Tổng Doanh Thu</p>
-                            <p class="text-xl font-bold" id="totalRevenue">0₫</p>
+            <!-- SECTION 3: TRANSACTION HISTORY -->
+            <section class="glass-card rounded-2xl p-5 sm:p-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
+                    <div>
+                        <h2 class="font-display text-xl sm:text-2xl font-bold uppercase tracking-wide text-white flex items-center gap-2">
+                            <span class="w-1.5 h-6 bg-barber-red rounded-full inline-block"></span>
+                            Lịch Sử Thu - Chi Chi Tiết
+                        </h2>
+                        <p class="text-xs text-gray-400">Quản lý toàn bộ hóa đơn khách thanh toán và chi phí hoạt động của tiệm</p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2.5">
+                        <div class="relative flex-1 sm:flex-initial">
+                            <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                            <input type="text" id="tx-search" oninput="renderTransactions()" placeholder="Tìm nội dung, khách hàng..." class="w-full sm:w-56 pl-8 pr-3 py-2 bg-barber-dark border border-gray-700 rounded-xl text-xs text-white focus:outline-none focus:border-barber-gold">
                         </div>
-                        <div class="p-4 bg-red-500/5 rounded-lg border border-red-500/20">
-                            <p class="text-red-400 text-sm">👥 Tổng Khách Hàng</p>
-                            <p class="text-xl font-bold" id="totalCustomers">0</p>
-                        </div>
-                        <div class="p-4 bg-blue-500/5 rounded-lg border border-blue-500/20">
-                            <p class="text-blue-400 text-sm">📄 Tổng Hóa Đơn</p>
-                            <p class="text-xl font-bold" id="totalInvoices">0</p>
-                        </div>
-                        <div class="p-4 bg-green-500/5 rounded-lg border border-green-500/20">
-                            <p class="text-green-400 text-sm">⭐ Dịch Vụ Bán Chạy</p>
-                            <p class="text-sm font-bold" id="topService">-</p>
-                        </div>
+
+                        <select id="tx-filter" onchange="renderTransactions()" class="px-3 py-2 bg-barber-dark border border-gray-700 rounded-xl text-xs text-white focus:outline-none focus:border-barber-gold">
+                            <option value="all">Tất cả giao dịch</option>
+                            <option value="income">Chỉ khoản THU (Dịch vụ)</option>
+                            <option value="expense">Chỉ khoản CHI (Chi phí)</option>
+                        </select>
                     </div>
                 </div>
-            </div>
+
+                <div class="overflow-x-auto rounded-xl border border-gray-800">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-barber-dark text-gray-400 text-[11px] uppercase tracking-wider border-b border-gray-800">
+                                <th class="py-3.5 px-4">Thời Gian</th>
+                                <th class="py-3.5 px-4">Loại</th>
+                                <th class="py-3.5 px-4">Nội Dung / Dịch Vụ Đã Làm</th>
+                                <th class="py-3.5 px-4">Người Thực Hiện</th>
+                                <th class="py-3.5 px-4 text-right">Số Tiền</th>
+                                <th class="py-3.5 px-4 text-center">Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactions-tbody" class="divide-y divide-gray-800/70 text-sm"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SECTION 4: MINIMAP & GOOGLE MAPS GALLERY -->
+            <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Minimap -->
+                <div class="lg:col-span-6 glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-4">
+                            <div>
+                                <h2 class="font-display text-xl sm:text-2xl font-bold uppercase text-white flex items-center gap-2">
+                                    <i class="fa-solid fa-location-dot text-barber-red"></i>
+                                    Bản Đồ Minimap Tiệm
+                                </h2>
+                                <p id="display-shop-address" class="text-xs text-gray-400 mt-0.5">NQ BARBER - Định vị trực tiếp trên Google Maps</p>
+                            </div>
+                            <a href="https://share.google/0QZGoxECzfIuMeDaY" target="_blank" rel="noopener noreferrer" class="btn-rgb-float shrink-0">
+                                <div class="btn-rgb-inner bg-barber-dark hover:bg-gray-900 px-3.5 py-2 text-xs font-bold text-barber-gold">
+                                    <i class="fa-solid fa-map-location-dot text-barber-red"></i> Mở Google Maps
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="relative w-full h-72 sm:h-80 rounded-xl overflow-hidden border-2 border-barber-gold/40 shadow-inner bg-barber-dark">
+                            <iframe id="gmap-iframe" class="w-full h-full border-0 filter contrast-110" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=NQ%20Barber&amp;t=&amp;z=16&amp;ie=UTF8&amp;iwloc=&amp;output=embed">
+                            </iframe>
+
+                            <div class="absolute bottom-3 left-3 right-3 sm:right-auto bg-barber-black/90 backdrop-blur-md border border-barber-gold/50 rounded-xl p-3 flex items-center gap-3 shadow-xl">
+                                <div class="w-10 h-10 rounded-lg bg-barber-red flex items-center justify-center text-white shrink-0 animate-pulse">
+                                    <i class="fa-solid fa-scissors"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-xs font-bold text-barber-gold uppercase truncate">NQ BARBER SALON</p>
+                                    <p class="text-[11px] text-gray-300 truncate">Bấm "Mở Google Maps" để xem chỉ đường</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs text-gray-400 bg-barber-dark/80 p-3 rounded-xl border border-gray-800">
+                        <span><i class="fa-solid fa-clock text-barber-gold mr-1.5"></i>Giờ mở cửa: 08:30 - 20:30 (Hàng ngày)</span>
+                        <a href="https://share.google/0QZGoxECzfIuMeDaY" target="_blank" rel="noopener noreferrer" class="text-barber-gold hover:underline font-semibold">
+                            Xem trên Google Maps <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Google Maps Photo Gallery -->
+                <div class="lg:col-span-6 glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-4">
+                            <div>
+                                <h2 class="font-display text-xl sm:text-2xl font-bold uppercase text-white flex items-center gap-2">
+                                    <i class="fa-solid fa-images text-barber-gold"></i>
+                                    Ảnh Tiệm Trên Google Maps
+                                </h2>
+                                <p class="text-xs text-gray-400 mt-0.5">Không gian cắt tóc &amp; hình ảnh thực tế tại NQ Barber</p>
+                            </div>
+
+                            <button type="button" onclick="openAddPhotoModal()" class="admin-only hidden btn-rgb-float shrink-0">
+                                <div class="btn-rgb-inner bg-barber-dark hover:bg-gray-900 px-3 py-2 text-xs font-bold text-barber-gold">
+                                    <i class="fa-solid fa-camera"></i> Thêm Ảnh
+                                </div>
+                            </button>
+                        </div>
+
+                        <div id="shop-gallery-grid" class="grid grid-cols-2 gap-3"></div>
+                    </div>
+
+                    <div class="mt-4 flex items-center justify-between text-xs text-gray-400 bg-barber-dark/80 p-3 rounded-xl border border-gray-800">
+                        <span><i class="fa-solid fa-star text-barber-gold mr-1"></i>Đánh giá 5.0 sao trên Google Maps</span>
+                        <a href="https://share.google/0QZGoxECzfIuMeDaY" target="_blank" rel="noopener noreferrer" class="text-white hover:text-barber-gold transition font-medium">
+                            Xem thêm trên Google Maps →
+                        </a>
+                    </div>
+                </div>
+            </section>
         </main>
+
+        <!-- =========================================================
+             FOOTER: FLOATING RGB LED CONTACT BUTTONS
+             ========================================================= -->
+        <footer class="mt-12 bg-barber-dark border-t-2 border-barber-gold/40 relative overflow-hidden">
+            <div class="h-1 w-full barber-stripe"></div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                <div class="text-center max-w-2xl mx-auto mb-8">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-barber-red/20 border border-barber-red/40 text-barber-gold text-xs font-bold uppercase tracking-widest mb-3">
+                        <i class="fa-solid fa-headset"></i> Liên Hệ &amp; Đặt Lịch NQ Barber
+                    </div>
+                    <h2 class="font-display text-2xl sm:text-4xl font-bold uppercase text-white tracking-wide">
+                        KẾT NỐI TRỰC TIẾP VỚI <span class="text-barber-gold">NQ BARBER</span>
+                    </h2>
+                    <p class="text-gray-400 text-xs sm:text-sm mt-2">
+                        Hỗ trợ tư vấn kiểu tóc, đặt lịch cắt VIP hoặc liên hệ quản lý qua các kênh chính thức bên dưới
+                    </p>
+                </div>
+
+                <!-- 3 Prominent RGB LED Floating Contact Buttons -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-4xl mx-auto mb-10">
+                    <!-- Facebook -->
+                    <a href="https://www.facebook.com/NMQ1810/" target="_blank" rel="noopener noreferrer" class="btn-rgb-float float-idle w-full">
+                        <div class="btn-rgb-inner bg-gradient-to-r from-[#1877F2] to-[#0d56b8] py-4 px-5 text-white">
+                            <div class="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center text-2xl shrink-0">
+                                <i class="fa-brands fa-facebook-f"></i>
+                            </div>
+                            <div class="text-left">
+                                <div class="text-[11px] uppercase tracking-wider text-blue-100 font-semibold">Facebook Chính Thức</div>
+                                <div class="font-display text-lg font-bold tracking-wide">NMQ1810</div>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Zalo -->
+                    <a href="https://zalo.me/0971886269" target="_blank" rel="noopener noreferrer" class="btn-rgb-float float-idle w-full" style="animation-delay: 0.4s;">
+                        <div class="btn-rgb-inner bg-gradient-to-r from-[#0068FF] to-[#004ec2] py-4 px-5 text-white">
+                            <div class="w-11 h-11 rounded-full bg-white text-[#0068FF] flex items-center justify-center font-extrabold text-sm shrink-0 shadow">
+                                ZALO
+                            </div>
+                            <div class="text-left">
+                                <div class="text-[11px] uppercase tracking-wider text-sky-100 font-semibold">Chat Zalo Đặt Lịch</div>
+                                <div class="font-display text-lg font-bold tracking-wide">0971.886.269</div>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Hotline -->
+                    <a href="tel:0971886269" class="btn-rgb-float float-idle w-full" style="animation-delay: 0.8s;">
+                        <div class="btn-rgb-inner bg-gradient-to-r from-barber-red via-red-600 to-amber-600 py-4 px-5 text-white">
+                            <div class="w-11 h-11 rounded-full bg-barber-gold text-barber-black flex items-center justify-center text-xl shrink-0 shadow">
+                                <i class="fa-solid fa-phone-volume"></i>
+                            </div>
+                            <div class="text-left">
+                                <div class="text-[11px] uppercase tracking-wider text-yellow-200 font-semibold">Gọi Hotline Ngay</div>
+                                <div class="font-display text-lg font-bold tracking-wide text-barber-gold">0971.886.269</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="pt-6 border-t border-gray-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-scissors text-barber-gold"></i>
+                        <span class="font-bold text-gray-300">NQ BARBER</span> © 2026 - Hệ thống quản lý tiệm tóc chuyên nghiệp.
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <a href="https://share.google/0QZGoxECzfIuMeDaY" target="_blank" rel="noopener noreferrer" class="hover:text-barber-gold transition">Google Maps</a>
+                        <span>•</span>
+                        <a href="https://www.facebook.com/NMQ1810/" target="_blank" rel="noopener noreferrer" class="hover:text-barber-gold transition">Facebook</a>
+                        <span>•</span>
+                        <a href="tel:0971886269" class="hover:text-barber-gold transition">0971886269</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
     </div>
-</div>
 
-<!-- MODAL: Khách Hàng -->
-<div id="customerModal" class="modal">
-    <div class="bg-card p-6 rounded-xl border border-gray-800 w-full max-w-md">
-        <h3 class="text-xl font-bold mb-4" id="customerModalTitle">Thêm Khách Hàng</h3>
-        <div class="space-y-3">
-            <div><label class="text-sm text-gray-400 block mb-1">Tên khách hàng</label>
-                <input type="text" id="custName" class="w-full bg-input border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:border-gold">
+    <!-- =========================================================
+         MODALS (QR CHECKOUT, SUCCESS TRANSFER, EXPENSE, SETTINGS)
+         ========================================================= -->
+
+    <!-- MODAL 1: VIETQR PAYMENT -->
+    <div id="modal-qr" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="glass-card w-full max-w-lg rounded-2xl p-6 border-2 border-barber-gold relative my-auto">
+            <button type="button" onclick="closeModal('modal-qr')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-800 hover:bg-barber-red text-white flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center mb-4">
+                <span class="px-3 py-1 rounded-full bg-barber-gold/20 text-barber-gold text-xs font-bold uppercase">Thanh Toán Dịch Vụ</span>
+                <h3 class="font-display text-2xl font-bold text-white mt-2">QUÉT MÃ VIETQR THANH TOÁN</h3>
+                <p id="qr-customer-info" class="text-xs text-gray-400 mt-0.5">Khách hàng: Khách lẻ</p>
             </div>
-            <div><label class="text-sm text-gray-400 block mb-1">Số điện thoại</label>
-                <input type="tel" id="custPhone" class="w-full bg-input border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:border-gold">
+
+            <!-- List of Services Done with Quantity -->
+            <div class="bg-barber-dark rounded-xl p-3.5 border border-gray-800 mb-4 max-h-36 overflow-y-auto">
+                <div class="text-[11px] font-bold uppercase text-barber-gold mb-2 border-b border-gray-800 pb-1">Chi tiết dịch vụ &amp; số lượng khách đã làm:</div>
+                <div id="qr-services-summary" class="space-y-1.5 text-xs"></div>
             </div>
-            <div><label class="text-sm text-gray-400 block mb-1">Ghi chú</label>
-                <textarea id="custNote" class="w-full bg-input border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:border-gold" rows="2"></textarea>
+
+            <!-- VietQR Image + Fallback QRCode.js -->
+            <div class="bg-white rounded-2xl p-3.5 flex flex-col items-center justify-center max-w-[280px] mx-auto shadow-[0_0_30px_rgba(255,215,0,0.35)]">
+                <img id="vietqr-img" src="" alt="Mã VietQR Thanh Toán" class="w-56 h-56 object-contain rounded-lg">
+                <div id="qrcode-fallback" class="hidden p-1 flex items-center justify-center"></div>
+                <div class="mt-2 text-center border-t border-gray-200 pt-2 w-full">
+                    <p id="qr-bank-info" class="text-[11px] text-barber-black font-extrabold">MB Bank • STK: 0971886269</p>
+                    <p id="qr-holder-info" class="text-[10px] text-gray-600 font-bold uppercase">NGUYEN MINH QUAN</p>
+                </div>
             </div>
-        </div>
-        <div class="flex gap-3 mt-4">
-            <button onclick="closeCustomerModal()" class="btn-outline flex-1 py-2 rounded-lg">Đóng</button>
-            <button onclick="saveCustomer()" class="btn-primary flex-1 py-2 rounded-lg">Lưu</button>
+
+            <div class="mt-4 text-center space-y-1">
+                <p class="text-xs text-gray-400">Tổng số tiền thanh toán:</p>
+                <p id="qr-total-display" class="font-display text-3xl font-bold text-barber-gold">0 ₫</p>
+                <p id="qr-note-display" class="text-[11px] text-gray-300 bg-barber-dark py-1.5 px-3 rounded-lg inline-block border border-gray-800">
+                    ND: NQ BARBER THANH TOAN
+                </p>
+            </div>
+
+            <div class="mt-6 grid grid-cols-2 gap-3">
+                <button type="button" onclick="closeModal('modal-qr')" class="py-3 px-4 rounded-xl bg-gray-800 hover:bg-gray-700 text-xs font-bold text-gray-300 transition">
+                    Quay Lại Sửa
+                </button>
+                <button type="button" onclick="confirmBillPayment()" class="btn-rgb-float w-full">
+                    <div class="btn-rgb-inner bg-gradient-to-r from-emerald-600 to-emerald-500 py-3 px-4 text-xs font-extrabold text-white uppercase">
+                        <i class="fa-solid fa-circle-check"></i> Chuyển Khoản Đã Thành Công
+                    </div>
+                </button>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- MODAL: Dịch Vụ -->
-<div id="serviceModal" class="modal">
-    <div class="bg-card p-6 rounded-xl border border-gray-800 w-full max-w-md">
-        <h3 class="text-xl font-bold mb-4" id="serviceModalTitle">Thêm Dịch Vụ</h3>
-        <div class="space-y-3">
-            <div><label class="text-sm text-gray-400 block mb-1">Biểu tượng (vd: 💇)</label>
-                <input type="text" id="servImg" class="w-full bg-input border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:border-gold">
+    <!-- MODAL 1B: TRANSFER SUCCESS CONFIRMATION RECEIPT -->
+    <div id="modal-transfer-success" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+        <div class="glass-card w-full max-w-md rounded-2xl p-6 sm:p-7 border-2 border-emerald-500 text-center relative my-auto shadow-[0_0_40px_rgba(16,185,129,0.3)]">
+            <div class="w-20 h-20 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center mx-auto mb-4 text-emerald-400 text-4xl shadow-[0_0_25px_rgba(16,185,129,0.45)]">
+                <i class="fa-solid fa-check"></i>
             </div>
-            <div><label class="text-sm text-gray-400 block mb-1">Tên dịch vụ</label>
-                <input type="text" id="servName" class="w-full bg-input border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:border-gold">
+
+            <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-[11px] font-extrabold uppercase tracking-wider border border-emerald-500/30">
+                Giao Dịch Hoàn Tất
+            </span>
+            <h3 class="font-display text-2xl sm:text-3xl font-bold text-white uppercase mt-2">
+                CHUYỂN KHOẢN ĐÃ THÀNH CÔNG!
+            </h3>
+            <p class="text-xs text-gray-400 mt-1">Hóa đơn đã được tự động cộng vào doanh thu tiệm</p>
+
+            <div class="my-5 bg-barber-dark/90 rounded-2xl p-4 border border-gray-800 text-left space-y-2.5 text-xs">
+                <div class="flex items-center justify-between border-b border-gray-800 pb-2">
+                    <span class="text-gray-400">Số tiền đã nhận:</span>
+                    <span id="success-tx-amount" class="font-display text-2xl font-bold text-emerald-400">0 ₫</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-400">Mã giao dịch:</span>
+                    <span id="success-tx-id" class="font-bold text-white">#TX-000</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-400">Khách hàng:</span>
+                    <span id="success-tx-customer" class="font-semibold text-white">Khách lẻ</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-400">Thợ thực hiện:</span>
+                    <span id="success-tx-staff" class="font-semibold text-barber-gold">Minh Quân</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-400">Thời gian thanh toán:</span>
+                    <span id="success-tx-time" class="text-gray-300">--/--/---- --:--</span>
+                </div>
+                <div class="pt-2 border-t border-gray-800">
+                    <span class="text-gray-400 block mb-1">Dịch vụ đã thanh toán:</span>
+                    <p id="success-tx-services" class="text-white font-medium leading-relaxed"></p>
+                </div>
             </div>
-            <div><label class="text-sm text-gray-400 block mb-1">Giá (VNĐ)</label>
-                <input type="number" id="servPrice" class="w-full bg-input border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:border-gold">
-            </div>
-        </div>
-        <div class="flex gap-3 mt-4">
-            <button onclick="closeServiceModal()" class="btn-outline flex-1 py-2 rounded-lg">Đóng</button>
-            <button onclick="saveService()" class="btn-primary flex-1 py-2 rounded-lg">Lưu</button>
+
+            <button type="button" onclick="closeModal('modal-transfer-success')" class="btn-rgb-float w-full">
+                <div class="btn-rgb-inner bg-gradient-to-r from-barber-gold to-amber-500 py-3.5 px-6 text-xs font-extrabold text-barber-black uppercase tracking-wider">
+                    <i class="fa-solid fa-check-double"></i> Hoàn Tất &amp; Tiếp Tục Bán Hàng
+                </div>
+            </button>
         </div>
     </div>
-</div>
 
-<link rel="stylesheet" href="style.css">
-<script src="app.js"></script>
+    <!-- MODAL 2: ADD EXPENSE -->
+    <div id="modal-expense" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md rounded-2xl p-6 border border-barber-red/50 relative">
+            <button type="button" onclick="closeModal('modal-expense')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-800 hover:bg-barber-red text-white flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="font-display text-2xl font-bold text-white uppercase flex items-center gap-2 mb-4">
+                <i class="fa-solid fa-file-invoice-dollar text-barber-red"></i>
+                Ghi Nhận Khoản Chi Tiêu
+            </h3>
+            <form id="expense-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-400 mb-1">Danh mục chi tiêu</label>
+                    <select id="exp-category" class="w-full px-3.5 py-2.5 bg-barber-dark border border-gray-700 rounded-xl text-sm text-white focus:outline-none focus:border-barber-gold">
+                        <option value="Vật tư tóc (Sáp, gôm, thuốc uốn/nhuộm)">Vật tư tóc (Sáp, gôm, thuốc uốn/nhuộm)</option>
+                        <option value="Dụng cụ (Lưỡi dao cạo, kéo, khăn)">Dụng cụ (Lưỡi dao cạo, kéo, khăn)</option>
+                        <option value="Điện / Nước / Internet">Điện / Nước / Internet</option>
+                        <option value="Lương / Thưởng nhân viên">Lương / Thưởng nhân viên</option>
+                        <option value="Mặt bằng / Vệ sinh tiệm">Mặt bằng / Vệ sinh tiệm</option>
+                        <option value="Chi phí phát sinh khác">Chi phí phát sinh khác</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-400 mb-1">Mô tả chi tiết</label>
+                    <input type="text" id="exp-desc" required placeholder="VD: Mua 2 hộp sáp vuốt tóc + 1 hộp dao lam" class="w-full px-3.5 py-2.5 bg-barber-dark border border-gray-700 rounded-xl text-sm text-white focus:outline-none focus:border-barber-gold">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-400 mb-1">Số tiền chi (VNĐ)</label>
+                    <input type="number" id="exp-amount" required min="1000" step="1000" placeholder="VD: 250000" class="w-full px-3.5 py-2.5 bg-barber-dark border border-gray-700 rounded-xl text-sm text-barber-gold font-bold focus:outline-none focus:border-barber-gold">
+                </div>
+                <div class="pt-2">
+                    <button type="submit" class="btn-rgb-float w-full">
+                        <div class="btn-rgb-inner bg-barber-red hover:bg-barber-redHover py-3 px-5 text-xs font-bold text-white uppercase">
+                            <i class="fa-solid fa-save"></i> Lưu Khoản Chi Tiêu
+                        </div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
+    <!-- MODAL 3: ADMIN SERVICE -->
+    <div id="modal-service" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md rounded-2xl p-6 border border-barber-gold/60 relative">
+            <button type="button" onclick="closeModal('modal-service')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-800 hover:bg-barber-red text-white flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 id="modal-service-title" class="font-display text-2xl font-bold text-barber-gold uppercase mb-4">Thêm Dịch Vụ Mới</h3>
+            <form id="service-form" class="space-y-4">
+                <input type="hidden" id="srv-id">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-400 mb-1">Tên dịch vụ</label>
+                    <input type="text" id="srv-name" required placeholder="VD: Cắt tóc tạo kiểu VIP" class="w-full px-3.5 py-2.5 bg-barber-dark border border-gray-700 rounded-xl text-sm text-white focus:outline-none focus:border-barber-gold">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-400 mb-1">Giá dịch vụ (VNĐ)</label>
+                    <input type="number" id="srv-price" required min="0" step="1000" placeholder="VD: 100000" class="w-full px-3.5 py-2.5 bg-barber-dark border border-gray-700 rounded-xl text-sm text-barber-gold font-bold focus:outline-none focus:border-barber-gold">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-400 mb-1">Mô tả ngắn / Thời gian</label>
+                    <input type="text" id="srv-desc" placeholder="VD: Tư vấn + Cắt + Xả sạch + Vuốt sáp (45p)" class="w-full px-3.5 py-2.5 bg-barber-dark border border-gray-700 rounded-xl text-sm text-white focus:outline-none focus:border-barber-gold">
+                </div>
+                <div class="pt-2">
+                    <button type="submit" class="btn-rgb-float w-full">
+                        <div class="btn-rgb-inner bg-barber-gold text-barber-black py-3 px-5 text-xs font-extrabold uppercase">
+                            <i class="fa-solid fa-check"></i> Lưu Dịch Vụ
+                        </div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 4: ADMIN EDIT TRANSACTION -->
+    <div id="modal-edit-tx" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md rounded-2xl p-6 border border-barber-gold/60 relative">
+            <button type="button" onclick="closeModal('modal-edit-tx')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-800 hover:bg-barber-red text-white flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="font-display text-2xl font-bold text-barber-gold uppercase mb-1">Admin Chỉnh Sửa Giao Dịch</h3>
+            <p class="text-xs text-gray-400 mb-4">Điều chỉnh trực tiếp nội dung và số tiền của giao dịch</p>
+            <form id="edit-tx-form" class="space-y-4">
+                <input type="hidden" id="edit-tx-id">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-400 mb-1">Nội dung / Dịch vụ</label>
+                    <input type="text" id="edit-tx-title" required class="w-full px-3.5 py-2.5 bg-barber-dark border border-gray-700 rounded-xl text-sm text-white focus:outline-none focus:border-barber-gold">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-400 mb-1">Khách hàng / Ghi chú</label>
+                    <input type="text" id="edit-tx-customer" class="w-full px-3.5 py-2.5 bg-barber-dark border border-gray-700 rounded-xl text-sm text-white focus:outline-none focus:border-barber-gold">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-400 mb-1">Số tiền điều chỉnh (VNĐ)</label>
+                    <input type="number" id="edit-tx-amount" required min="0" step="1000" class="w-full px-3.5 py-2.5 bg-barber-dark border border-gray-700 rounded-xl text-base text-barber-gold font-bold focus:outline-none focus:border-barber-gold">
+                </div>
+                <div class="pt-2">
+                    <button type="submit" class="btn-rgb-float w-full">
+                        <div class="btn-rgb-inner bg-barber-gold text-barber-black py-3 px-5 text-xs font-extrabold uppercase">
+                            <i class="fa-solid fa-floppy-disk"></i> Cập Nhật Số Tiền &amp; Nội Dung
+                        </div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 5: ADMIN DIRECT BALANCE ADJUST -->
+    <div id="modal-direct-adjust" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md rounded-2xl p-6 border border-barber-gold relative">
+            <button type="button" onclick="closeModal('modal-direct-adjust')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-800 hover:bg-barber-red text-white flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="font-display text-2xl font-bold text-barber-gold uppercase mb-1">Điều Chỉnh Số Tiền Quỹ Tiệm</h3>
+            <p class="text-xs text-gray-400 mb-4">Admin nhập trực tiếp tổng doanh thu hoặc tổng chi phí mong muốn.</p>
+            <form id="direct-adjust-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-400 mb-1">Tổng Doanh Thu Mục Tiêu (VNĐ)</label>
+                    <input type="number" id="adj-revenue" required min="0" step="1000" class="w-full px-3.5 py-2.5 bg-barber-dark border border-gray-700 rounded-xl text-base text-barber-gold font-bold focus:outline-none focus:border-barber-gold">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-400 mb-1">Tổng Chi Tiêu Mục Tiêu (VNĐ)</label>
+                    <input type="number" id="adj-expense" required min="0" step="1000" class="w-full px-3.5 py-2.5 bg-barber-dark border border-gray-700 rounded-xl text-base text-barber-red font-bold focus:outline-none focus:border-barber-gold">
+                </div>
+                <div class="pt-2">
+                    <button type="submit" class="btn-rgb-float w-full">
+                        <div class="btn-rgb-inner bg-gradient-to-r from-barber-gold to-amber-500 text-barber-black py-3 px-5 text-xs font-extrabold uppercase">
+                            <i class="fa-solid fa-sliders"></i> Áp Dụng Số Dư Mới
+                        </div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 6: ADMIN SHOP & VIETQR SETTINGS -->
+    <div id="modal-shop-settings" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="glass-card w-full max-w-lg rounded-2xl p-6 border border-barber-gold relative my-auto">
+            <button type="button" onclick="closeModal('modal-shop-settings')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-800 hover:bg-barber-red text-white flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="font-display text-2xl font-bold text-barber-gold uppercase mb-1">Cấu Hình Tiệm &amp; VietQR</h3>
+            <p class="text-xs text-gray-400 mb-4">Cài đặt thông tin tiệm &amp; tài khoản ngân hàng liên kết mã VietQR</p>
+            <form id="shop-settings-form" class="space-y-3.5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-gray-400 mb-1">Tên Tiệm</label>
+                        <input type="text" id="set-shop-name" required class="w-full px-3 py-2 bg-barber-dark border border-gray-700 rounded-xl text-sm text-white focus:border-barber-gold focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-gray-400 mb-1">Slogan / Khẩu hiệu</label>
+                        <input type="text" id="set-shop-tagline" class="w-full px-3 py-2 bg-barber-dark border border-gray-700 rounded-xl text-sm text-white focus:border-barber-gold focus:outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-400 mb-1">Địa chỉ hiển thị</label>
+                    <input type="text" id="set-shop-address" required class="w-full px-3 py-2 bg-barber-dark border border-gray-700 rounded-xl text-sm text-white focus:border-barber-gold focus:outline-none">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-gray-400 mb-1">Ngân hàng nhận VietQR</label>
+                        <select id="set-bank-id" class="w-full px-3 py-2 bg-barber-dark border border-gray-700 rounded-xl text-sm text-white focus:border-barber-gold focus:outline-none">
+                            <option value="MB">MB Bank (Quân Đội)</option>
+                            <option value="VCB">Vietcombank</option>
+                            <option value="TCB">Techcombank</option>
+                            <option value="BIDV">BIDV</option>
+                            <option value="ICB">VietinBank</option>
+                            <option value="ACB">ACB (Á Châu)</option>
+                            <option value="VPB">VPBank</option>
+                            <option value="TPB">TPBank</option>
+                            <option value="STB">Sacombank</option>
+                            <option value="VIB">VIB</option>
+                            <option value="MSB">MSB</option>
+                            <option value="OCB">OCB</option>
+                            <option value="SHB">SHB</option>
+                            <option value="AGRI">Agribank</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-gray-400 mb-1">Số Tài Khoản Nhận Tiền</label>
+                        <input type="text" id="set-bank-acc" required placeholder="VD: 0971886269" class="w-full px-3 py-2 bg-barber-dark border border-gray-700 rounded-xl text-sm text-barber-gold font-bold focus:border-barber-gold focus:outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-400 mb-1">Tên Chủ Tài Khoản (Không dấu)</label>
+                    <input type="text" id="set-bank-holder" required placeholder="VD: NGUYEN MINH QUAN" class="w-full px-3 py-2 bg-barber-dark border border-gray-700 rounded-xl text-sm text-white uppercase focus:border-barber-gold focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-400 mb-1">Danh sách thợ cắt (cách nhau dấu phẩy)</label>
+                    <input type="text" id="set-barbers" placeholder="VD: Minh Quân, Hoàng Nam, Tuấn Anh" class="w-full px-3 py-2 bg-barber-dark border border-gray-700 rounded-xl text-sm text-white focus:border-barber-gold focus:outline-none">
+                </div>
+                <div class="pt-3 flex items-center justify-between gap-3">
+                    <button type="button" onclick="resetDemoData()" class="px-3 py-2.5 rounded-xl bg-gray-800 hover:bg-red-900/60 text-xs text-gray-300 transition">
+                        Khôi phục dữ liệu mẫu
+                    </button>
+                    <button type="submit" class="btn-rgb-float flex-1">
+                        <div class="btn-rgb-inner bg-barber-gold text-barber-black py-2.5 px-5 text-xs font-extrabold uppercase">
+                            Lưu Cấu Hình Tiệm
+                        </div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 7: ADD PHOTO -->
+    <div id="modal-add-photo" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md rounded-2xl p-6 border border-barber-gold relative">
+            <button type="button" onclick="closeModal('modal-add-photo')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-800 hover:bg-barber-red text-white flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="font-display text-2xl font-bold text-barber-gold uppercase mb-3">Thêm Ảnh Không Gian Tiệm</h3>
+            <form id="add-photo-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-400 mb-1">Tiêu đề ảnh</label>
+                    <input type="text" id="photo-caption" required placeholder="VD: Góc cắt tóc VIP NQ Barber" class="w-full px-3.5 py-2.5 bg-barber-dark border border-gray-700 rounded-xl text-sm text-white focus:border-barber-gold focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-400 mb-1">Đường dẫn hình ảnh (URL)</label>
+                    <input type="url" id="photo-url" required placeholder="https://..." class="w-full px-3.5 py-2.5 bg-barber-dark border border-gray-700 rounded-xl text-sm text-white focus:border-barber-gold focus:outline-none">
+                </div>
+                <button type="submit" class="btn-rgb-float w-full">
+                    <div class="btn-rgb-inner bg-barber-gold text-barber-black py-3 px-5 text-xs font-extrabold uppercase">
+                        Thêm Vào Bộ Sưu Tập
+                    </div>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 8: LIGHTBOX -->
+    <div id="modal-lightbox" onclick="closeModal('modal-lightbox')" class="fixed inset-0 z-50 hidden bg-black/95 flex items-center justify-center p-4 cursor-zoom-out">
+        <div class="max-w-4xl w-full text-center" onclick="event.stopPropagation()">
+            <img id="lightbox-img" src="" alt="NQ Barber" class="max-h-[80vh] mx-auto rounded-2xl border-2 border-barber-gold shadow-2xl object-contain">
+            <p id="lightbox-caption" class="text-barber-gold font-display text-lg uppercase mt-3"></p>
+            <button type="button" onclick="closeModal('modal-lightbox')" class="mt-3 px-4 py-1.5 rounded-full bg-barber-red text-white text-xs font-bold">Đóng ảnh</button>
+        </div>
+    </div>
+
+    <!-- MODAL 9: ADMIN ACCOUNT & PASSWORD MANAGEMENT -->
+    <div id="modal-accounts" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="glass-card w-full max-w-3xl rounded-2xl p-6 border-2 border-barber-gold relative my-auto">
+            <button type="button" onclick="closeModal('modal-accounts')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-800 hover:bg-barber-red text-white flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="mb-5">
+                <span class="px-2.5 py-0.5 rounded-full bg-barber-red/20 text-barber-gold text-[11px] font-bold uppercase border border-barber-red/40">
+                    <i class="fa-solid fa-crown mr-1"></i> Đặc Quyền Quản Trị Viên
+                </span>
+                <h3 class="font-display text-2xl font-bold text-white uppercase mt-1.5">Quản Lý Tài Khoản &amp; Đổi Mật Khẩu Thành Viên</h3>
+                <p class="text-xs text-gray-400">Admin có thể xem, đổi mật khẩu tất cả thành viên, cấp tài khoản mới hoặc xóa nhân viên.</p>
+            </div>
+
+            <!-- Add New Member Account Form -->
+            <form id="add-account-form" class="bg-barber-dark/90 p-4 rounded-xl border border-gray-800 mb-5">
+                <p class="text-xs font-bold uppercase text-barber-gold mb-3 flex items-center gap-1.5">
+                    <i class="fa-solid fa-user-plus"></i> Tạo Tài Khoản Thành Viên Mới
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div>
+                        <label class="block text-[10px] font-semibold uppercase text-gray-400 mb-1">Tên đăng nhập</label>
+                        <input type="text" id="new-acc-username" required placeholder="VD: tho_nam" class="w-full px-3 py-2 bg-barber-black border border-gray-700 rounded-lg text-xs text-white focus:border-barber-gold focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-semibold uppercase text-gray-400 mb-1">Tên hiển thị</label>
+                        <input type="text" id="new-acc-name" required placeholder="VD: Thợ Chính Nam" class="w-full px-3 py-2 bg-barber-black border border-gray-700 rounded-lg text-xs text-white focus:border-barber-gold focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-semibold uppercase text-gray-400 mb-1">Mật khẩu khởi tạo</label>
+                        <input type="text" id="new-acc-password" required placeholder="VD: 123456" class="w-full px-3 py-2 bg-barber-black border border-gray-700 rounded-lg text-xs text-barber-gold font-bold focus:border-barber-gold focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-semibold uppercase text-gray-400 mb-1">Vai trò quyền hạn</label>
+                        <select id="new-acc-role" class="w-full px-3 py-2 bg-barber-black border border-gray-700 rounded-lg text-xs text-white focus:border-barber-gold focus:outline-none">
+                            <option value="staff">Nhân Viên</option>
+                            <option value="admin">Quản Trị (Admin)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-3 flex justify-end">
+                    <button type="submit" class="btn-rgb-float">
+                        <div class="btn-rgb-inner bg-barber-gold text-barber-black px-4 py-2 text-xs font-extrabold uppercase">
+                            <i class="fa-solid fa-plus"></i> Thêm Thành Viên
+                        </div>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Members Account Table -->
+            <div class="overflow-x-auto rounded-xl border border-gray-800 max-h-[320px] overflow-y-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="sticky top-0 bg-barber-dark z-10">
+                        <tr class="text-gray-400 text-[11px] uppercase tracking-wider border-b border-gray-800">
+                            <th class="py-3 px-3.5">Tài Khoản</th>
+                            <th class="py-3 px-3.5">Tên Hiển Thị</th>
+                            <th class="py-3 px-3.5">Vai Trò</th>
+                            <th class="py-3 px-3.5">Mật Khẩu &amp; Đổi Mới</th>
+                            <th class="py-3 px-3.5 text-center">Xóa</th>
+                        </tr>
+                    </thead>
+                    <tbody id="accounts-tbody" class="divide-y divide-gray-800/70 text-xs"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         JAVASCRIPT APPLICATION LOGIC
+         ========================================================= -->
+    <script src="app.js"></script>
 </body>
 </html>
